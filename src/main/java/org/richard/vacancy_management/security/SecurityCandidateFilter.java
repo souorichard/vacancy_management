@@ -1,11 +1,9 @@
 package org.richard.vacancy_management.security;
 
 import java.io.IOException;
-import java.util.Collections;
 
 import org.richard.vacancy_management.providers.JWTCandidateProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -31,20 +29,18 @@ public class SecurityCandidateFilter extends OncePerRequestFilter {
 
     String header = request.getHeader("Authorization");
 
-    if (header != null) {
-      var subjectToken = this.jwtCandidateProvider.validateToken(header);
-
-      if (subjectToken.isEmpty()) {
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
-        return;
+    if (request.getRequestURI().startsWith("/candidate")) {
+      if (header != null) {
+        var subjectToken = this.jwtCandidateProvider.validateToken(header);
+  
+        if (subjectToken == null) {
+          response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+  
+          return;
+        }
+  
+        request.setAttribute("company_id", subjectToken);
       }
-
-      request.setAttribute("company_id", subjectToken);
-
-      UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(subjectToken, null, Collections.emptyList());
-
-      SecurityContextHolder.getContext().setAuthentication(auth);
     }
 
     filterChain.doFilter(request, response);

@@ -2,10 +2,12 @@ package org.richard.vacancy_management.modules.company.use_cases;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Arrays;
 
 import javax.naming.AuthenticationException;
 
-import org.richard.vacancy_management.modules.company.dto.AuthCompanyDTO;
+import org.richard.vacancy_management.modules.company.dto.AuthCompanyRequestDTO;
+import org.richard.vacancy_management.modules.company.dto.AuthCompanyResponseDTO;
 import org.richard.vacancy_management.modules.company.repositories.CompanyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +30,7 @@ public class AuthCompanyUseCase {
   @Autowired
   private PasswordEncoder passwordEncoder;
 
-  public String execute(AuthCompanyDTO authCompany) throws AuthenticationException {
+  public AuthCompanyResponseDTO execute(AuthCompanyRequestDTO authCompany) throws AuthenticationException {
     var company = this.repository.findByUsername(authCompany.getUsername()).orElseThrow(() -> {
       throw new UsernameNotFoundException("Username or password is incorrect");
     });
@@ -39,12 +41,20 @@ public class AuthCompanyUseCase {
 
     Algorithm algorithm = Algorithm.HMAC256(secretKey);
 
+    var expiresAt = Instant.now().plus(Duration.ofMinutes(10));
+
     var token = JWT.create()
       .withIssuer("jacancies")
       .withSubject(company.getId().toString())
-      .withExpiresAt(Instant.now().plus(Duration.ofHours(2)))
+      .withClaim("roles", Arrays.asList("COMPANY"))
+      .withExpiresAt(expiresAt)
       .sign(algorithm);
 
-    return token;
+    var authCompanyResponse = AuthCompanyResponseDTO.builder()
+      .access_token(token)
+      .expires_at(expiresAt.toEpochMilli())
+      .build();
+
+    return authCompanyResponse;
   }
 }

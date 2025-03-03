@@ -34,20 +34,20 @@ public class SecurityCandidateFilter extends OncePerRequestFilter {
 
     if (request.getRequestURI().startsWith("/candidate")) {
       if (header != null) {
-        var subjectToken = this.jwtCandidateProvider.validateToken(header);
+        var token = this.jwtCandidateProvider.validateToken(header);
   
-        if (subjectToken == null) {
+        if (token == null) {
           response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
   
           return;
         }
   
-        request.setAttribute("company_id", subjectToken.getSubject());
-        var roles = subjectToken.getClaim("roles").asList(Object.class);
+        request.setAttribute("company_id", token.getSubject());
+        var roles = token.getClaim("roles").asList(Object.class);
         
         var grants = roles.stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.toString().toUpperCase())).toList();
 
-        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(subjectToken, null, grants);
+        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(token.getSubject(), null, grants);
   
         SecurityContextHolder.getContext().setAuthentication(auth);
       }

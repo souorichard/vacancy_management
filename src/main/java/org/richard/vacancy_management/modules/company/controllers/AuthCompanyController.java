@@ -1,6 +1,6 @@
 package org.richard.vacancy_management.modules.company.controllers;
 
-import org.richard.vacancy_management.modules.company.dto.AuthCompanyDTO;
+import org.richard.vacancy_management.modules.company.dto.AuthCompanyRequestDTO;
 import org.richard.vacancy_management.modules.company.use_cases.AuthCompanyUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ public class AuthCompanyController {
   private AuthCompanyUseCase authCompanyUseCase;
 
   @PostMapping("/company")
-  public ResponseEntity<Object> create(@Valid @RequestBody AuthCompanyDTO authCompany) {
+  public ResponseEntity<Object> create(@Valid @RequestBody AuthCompanyRequestDTO authCompany) {
     try {
       var authenticatedCompany = this.authCompanyUseCase.execute(authCompany);
 

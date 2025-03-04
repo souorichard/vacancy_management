@@ -18,6 +18,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
@@ -61,6 +68,15 @@ public class CandidateController {
 
   @GetMapping("/job")
   @PreAuthorize("hasRole('CANDIDATE')")
+  @Tag(name = "Candidate", description = "Candidate informations")
+  @Operation(summary = "List of vacancies available for the candidate", description = "This function is responsible for listing all available vacancies, based onn the filter")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", content = {
+      @Content(array = @ArraySchema(
+        schema = @Schema(implementation = JobEntity.class)
+      ))
+    })
+  })
   public ResponseEntity<List<JobEntity>> findJobByFilter(@RequestParam String filter) {
     try {
       var jobs = this.listAllJobsByFilterUseCase.execute(filter);

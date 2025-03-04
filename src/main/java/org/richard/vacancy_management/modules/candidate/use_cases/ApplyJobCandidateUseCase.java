@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.richard.vacancy_management.exceptions.CandidateNotFoundException;
 import org.richard.vacancy_management.exceptions.JobNotFoundException;
+import org.richard.vacancy_management.modules.candidate.ApplyJobEntity;
 import org.richard.vacancy_management.modules.candidate.CandidateRepository;
 import org.richard.vacancy_management.modules.candidate.repositories.ApplyJobRepository;
 import org.richard.vacancy_management.modules.company.repositories.JobRepository;
@@ -22,7 +23,7 @@ public class ApplyJobCandidateUseCase {
   @Autowired
   private ApplyJobRepository applyJobRepository;
 
-  public void execute(UUID candidateId, UUID jobId) {
+  public ApplyJobEntity execute(UUID candidateId, UUID jobId) {
     this.candidateRepository.findById(candidateId).orElseThrow(() -> {
       throw new CandidateNotFoundException();
     });
@@ -30,5 +31,14 @@ public class ApplyJobCandidateUseCase {
     this.jobRepository.findById(jobId).orElseThrow(() -> {
       throw new JobNotFoundException();
     });
+
+    var applyJob = ApplyJobEntity.builder()
+      .candidateId(candidateId)
+      .candidateId(jobId)
+      .build();
+
+    var newApplyjob = this.applyJobRepository.save(applyJob);
+
+    return newApplyjob;
   }
 }

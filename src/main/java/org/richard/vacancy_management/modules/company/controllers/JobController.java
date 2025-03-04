@@ -25,6 +25,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/job")
+@Tag(name = "Vacancies", description = "Vacancies informations")
 public class JobController {
 
   @Autowired
@@ -32,7 +33,6 @@ public class JobController {
 
   @PostMapping
   @PreAuthorize("hasRole('COMPANY')")
-  @Tag(name = "Vacancies", description = "Vacancies informations")
   @Operation(summary = "Register vacancies", description = "This function is responsible for registering vacancies in the company")
   @ApiResponses({
     @ApiResponse(responseCode = "200", content = {

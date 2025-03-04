@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.richard.vacancy_management.modules.candidate.CandidateEntity;
+import org.richard.vacancy_management.modules.candidate.dto.ProfileCandidateReponseDTO;
 import org.richard.vacancy_management.modules.candidate.use_cases.CreateCandidateUseCase;
 import org.richard.vacancy_management.modules.candidate.use_cases.ListAllJobsByFilterUseCase;
 import org.richard.vacancy_management.modules.candidate.use_cases.ProfileCandidateUseCase;
@@ -55,6 +56,15 @@ public class CandidateController {
 
   @GetMapping
   @PreAuthorize("hasRole('CANDIDATE')")
+  @Tag(name = "Candidate", description = "Candidate informations")
+  @Operation(summary = "Candidate profile", description = "This function is responsible for searching candidate informations")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", content = {
+      @Content(schema = @Schema(implementation = ProfileCandidateReponseDTO.class))
+    }),
+    @ApiResponse(responseCode = "400", description = "User not found")
+  })
+  @SecurityRequirement(name = "jwt_auth")
   public ResponseEntity<Object> get(HttpServletRequest request) {
     var candidateId = request.getAttribute("candidate_id");
 

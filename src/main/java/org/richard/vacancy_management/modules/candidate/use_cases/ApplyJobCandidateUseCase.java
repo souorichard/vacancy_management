@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.richard.vacancy_management.exceptions.CandidateNotFoundException;
 import org.richard.vacancy_management.exceptions.JobNotFoundException;
 import org.richard.vacancy_management.modules.candidate.CandidateRepository;
+import org.richard.vacancy_management.modules.candidate.repositories.ApplyJobRepository;
 import org.richard.vacancy_management.modules.company.repositories.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,9 @@ public class ApplyJobCandidateUseCase {
   @Autowired
   private JobRepository jobRepository;
   
+  @Autowired
+  private ApplyJobRepository applyJobRepository;
+
   public void execute(UUID candidateId, UUID jobId) {
     this.candidateRepository.findById(candidateId).orElseThrow(() -> {
       throw new CandidateNotFoundException();

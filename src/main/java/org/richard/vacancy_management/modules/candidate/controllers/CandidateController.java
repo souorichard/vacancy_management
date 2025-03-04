@@ -1,10 +1,13 @@
 package org.richard.vacancy_management.modules.candidate.controllers;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.richard.vacancy_management.modules.candidate.CandidateEntity;
 import org.richard.vacancy_management.modules.candidate.use_cases.CreateCandidateUseCase;
+import org.richard.vacancy_management.modules.candidate.use_cases.ListAllJobsByFilterUseCase;
 import org.richard.vacancy_management.modules.candidate.use_cases.ProfileCandidateUseCase;
+import org.richard.vacancy_management.modules.company.entities.JobEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,6 +30,9 @@ public class CandidateController {
 
   @Autowired
   private ProfileCandidateUseCase profileCandidateUseCase;
+
+  @Autowired
+  private ListAllJobsByFilterUseCase listAllJobsByFilterUseCase;
 
   @PostMapping
   public ResponseEntity<Object> craate(@Valid @RequestBody CandidateEntity candidate) {
@@ -49,6 +56,18 @@ public class CandidateController {
       return ResponseEntity.ok().body(profileCandidate);
     } catch (Exception exception) {
       return ResponseEntity.status(400).body(exception.getMessage());
+    }
+  }
+
+  @GetMapping("/job")
+  @PreAuthorize("hasRole('CANDIDATE')")
+  public ResponseEntity<List<JobEntity>> findJobByFilter(@RequestParam String filter) {
+    try {
+      var jobs = this.listAllJobsByFilterUseCase.execute(filter);
+
+      return ResponseEntity.ok().body(jobs);
+    } catch (Exception exception) {
+      return null;
     }
   }
 }

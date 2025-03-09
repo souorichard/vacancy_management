@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.richard.vacancy_management.modules.candidate.CandidateEntity;
 import org.richard.vacancy_management.modules.candidate.dto.ProfileCandidateReponseDTO;
+import org.richard.vacancy_management.modules.candidate.use_cases.ApplyJobCandidateUseCase;
 import org.richard.vacancy_management.modules.candidate.use_cases.CreateCandidateUseCase;
 import org.richard.vacancy_management.modules.candidate.use_cases.ListAllJobsByFilterUseCase;
 import org.richard.vacancy_management.modules.candidate.use_cases.ProfileCandidateUseCase;
@@ -43,6 +44,9 @@ public class CandidateController {
 
   @Autowired
   private ListAllJobsByFilterUseCase listAllJobsByFilterUseCase;
+
+  @Autowired
+  private ApplyJobCandidateUseCase applyJobCandidateUseCase;
 
   @PostMapping
   @Operation(summary = "Register candidate", description = "This function is responsible for register a candidate")
@@ -102,6 +106,29 @@ public class CandidateController {
       return ResponseEntity.ok().body(jobs);
     } catch (Exception exception) {
       return null;
+    }
+  }
+
+  @PostMapping("/job/apply")
+  @PreAuthorize("hasRole('CANDIDATE')")
+  @Operation(summary = "Candidate registration", description = "This function is responsible for registering a candidate in a job")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", content = {
+      @Content(array = @ArraySchema(
+        schema = @Schema(implementation = JobEntity.class)
+      ))
+    })
+  })
+  @SecurityRequirement(name = "jwt_auth")
+  public ResponseEntity<Object> applyJob(HttpServletRequest request, @RequestBody UUID jobId) {
+    var candidateId = request.getAttribute("candidate_id");
+
+    try {
+      var result = this.applyJobCandidateUseCase.execute(UUID.fromString(candidateId.toString()), jobId);
+
+      return ResponseEntity.ok().body(result);
+    } catch(Exception exception) {
+      return ResponseEntity.badRequest().body(exception.getMessage());
     }
   }
 }

@@ -2,9 +2,11 @@ package org.richard.vacancy_management.modules.company.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class CreateJobDTO {
   
   @Schema(example = "Junior developer vacancy", requiredMode = RequiredMode.REQUIRED)

@@ -24,7 +24,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/job")
+@RequestMapping("/company/job")
 @Tag(name = "Vacancies", description = "Vacancies informations")
 public class JobController {
 

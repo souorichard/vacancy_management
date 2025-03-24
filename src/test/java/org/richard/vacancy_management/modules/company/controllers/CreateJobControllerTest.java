@@ -1,5 +1,7 @@
 package org.richard.vacancy_management.modules.company.controllers;
 
+import java.util.UUID;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -67,5 +69,21 @@ public class CreateJobControllerTest {
       .andExpect(MockMvcResultMatchers.status().isOk());
 
     System.out.println(result);
+  }
+
+  @Test
+  @DisplayName("Should be able to create a new job if company not found")
+  public void should_be_able_to_create_a_new_job_if_company_not_found() throws Exception {
+    var job = CreateJobDTO.builder()
+      .description("Description Test")
+      .benefits("Benefits Test")
+      .level("Level Test")
+      .build();
+
+    mvc.perform(MockMvcRequestBuilders.post("/company/job")
+      .contentType(MediaType.APPLICATION_JSON)
+      .content(TestUtils.objectToJSON(job))
+      .header("Authorization", UUID.randomUUID().toString()))
+      .andExpect(MockMvcResultMatchers.status().isBadRequest());
   }
 }

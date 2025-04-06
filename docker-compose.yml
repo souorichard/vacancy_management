@@ -24,6 +24,13 @@ services:
       - prometheus-data:/prometheus
     networks:
       - vm-network
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+    networks:
+      - vm-network
 
 volumes:
   prometheus-data:
